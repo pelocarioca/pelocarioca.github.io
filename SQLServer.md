@@ -69,6 +69,6 @@ Se va a proceder a instalar el gestor de bases de datos Microsoft SQL Server 200
 ![Programa de instalación de SQL Server 2008](imgsql/ins18.png)
 
 ---
-[Volver a la instalación del Helpspot]InformeHelpSpot.md)
+[Volver a la instalación del Helpspot](index.md)
 
 
