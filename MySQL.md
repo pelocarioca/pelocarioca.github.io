@@ -41,5 +41,5 @@ Se va a proceder a instalar el gestor de bases de datos MySQL en un Windows Serv
 El gestor de bases de datos MySQL ya estará correctamente instalado y configurado.
 
 ---
-[Volver a la instalación del Helpspot]InformeHelpSpot.md)
+[Volver a la instalación del Helpspot](index.md)
 
