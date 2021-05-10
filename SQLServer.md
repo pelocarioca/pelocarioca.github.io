@@ -67,3 +67,8 @@ Se va a proceder a instalar el gestor de bases de datos Microsoft SQL Server 200
 
 16. Y se procede a __cerrar__ el instalador una vez haya terminado.
 ![Programa de instalación de SQL Server 2008](imgsql/ins18.png)
+
+---
+[Volver a la instalación del Helpspot]InformeHelpSpot.md)
+
+
