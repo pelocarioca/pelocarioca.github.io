@@ -1,6 +1,6 @@
-## Práctica: uso de HelpSpot
+# Práctica: uso de HelpSpot
 
-### Introducción
+## Introducción
 Se va a documentar la instalación y uso básico de la aplicación de soporte técnico, helpdesk y gestión de tickets HelpSpot, en esta guía se van a tratar los siguientes puntos:
 
 1. Descarga de HelpSpot.
@@ -15,7 +15,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
   - Creación de staff.
 
 ---
-### Descarga de HelpSopt
+## Descarga de HelpSopt
 
 1. En primer lugar se __accede__ al sitio web https://www.helpspot.com/free-help-desk-software, donde se __pulsará__ en el botón de _"Try it free"_.
 
