@@ -13,6 +13,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
   - Análisis e informes.
   - Encuestas.
   - Creación de staff.
+
 ---
 ### Descarga de HelpSopt
 
