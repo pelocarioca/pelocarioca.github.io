@@ -30,7 +30,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
 ![Página de descarga.](img/paginaDescarga.PNG)
 
 ---
-### Instalación del producto
+## Instalación del producto
 
 1. Una vez se han descargado correctamente, se __ejecuta__ el instalador.
 
@@ -92,7 +92,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
 ![Web](img/ins14.png)
 
 ---
-### Opción A
+## Opción A
 15. Se __selecciona__ la dirección y el puerto del servidor de bases de datos, se dejan las opciones por defecto:
 
 ![Base de datos](img/ins15.png)
@@ -107,7 +107,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
 ![Base de datos](img/ins17.png)
 
 ---
-### Opción B
+## Opción B
 
 15. Se __selecciona__ la opción de _"I wish to use the bundled MySQL database..."_:
 
@@ -152,9 +152,9 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
 ![Instalador](img/nav2.png)
 
 ---
-## Uso básico del producto.
+# Uso básico del producto.
 
-### Tickets.
+## Tickets.
 
 Los tickets disponibles para su asignación están en "Workspace>Inbox", de esta forma los técnicos de helpdesk pueden asignarse tickets, reasignar a otro técnico, marcarlos como SPAM, añadir un estatus o responder en grupo junto a otros tickets:
 
@@ -204,7 +204,7 @@ Por último, se pueden revisar los datos del cliente, el historial del cliente y
 >_Live Lookup_
 
 ---
-### Librería de autoservicio (Self Service Knowledge Base).
+## Librería de autoservicio (Self Service Knowledge Base).
 
 En la sección _"Knowledge"_ se pueden crear, modificar y eliminar libros de la KB:
 
@@ -245,7 +245,7 @@ El libro ahora tendrá este aspecto:
 De esta forma se pueden editar los libros de la KB.
 
 ---
-### Análisis e informes.
+## Análisis e informes.
 
 A este apartado se accede desde la pestaña _"Reports"_:
 
@@ -258,7 +258,7 @@ Desde aquí se pueden comprobar las estadísticas sobre los tickets por hora rec
 Estos informes se pueden guardar como CSV o enviarse por email, entre otras funciones.
 
 ---
-### Respuestas predefinidas.
+## Respuestas predefinidas.
 
 Otra característica de este servicio es la posiblidad de generar respuestas predeterminadas a preguntas comunes a fin de agilizar la resolución de tickets.
 
@@ -281,7 +281,7 @@ Una vez creada, la respuesta aparecerá así:
 ![Respuestas](img/rs5.png)
 
 ---
-### Creación de staff.
+## Creación de staff.
 
 Para añadir usuarios a la plataforma, se __accede__ a _"Admin > Staff"_:
 
