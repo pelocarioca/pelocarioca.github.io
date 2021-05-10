@@ -92,7 +92,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
 ![Web](img/ins14.png)
 
 ---
-## Opción A
+## Opción A (MS SQL Server)
 15. Se __selecciona__ la dirección y el puerto del servidor de bases de datos, se dejan las opciones por defecto:
 
 ![Base de datos](img/ins15.png)
@@ -107,7 +107,7 @@ Se va a documentar la instalación y uso básico de la aplicación de soporte t�
 ![Base de datos](img/ins17.png)
 
 ---
-## Opción B
+## Opción B (MySQL Server)
 
 15. Se __selecciona__ la opción de _"I wish to use the bundled MySQL database..."_:
 
