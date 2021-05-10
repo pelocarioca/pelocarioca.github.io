@@ -1,3 +1,5 @@
+[Volver a la instalación del Helpspot](index.md)
+
 ## Instalación de MySQL por Chocolatey
 
 ### Introducción
@@ -42,4 +44,3 @@ El gestor de bases de datos MySQL ya estará correctamente instalado y configura
 
 ---
 [Volver a la instalación del Helpspot](index.md)
-

@@ -1,3 +1,5 @@
+[Volver a la instalación del Helpspot](index.md)
+
 ## Instalación de Microsoft SQL Server 2008
 
 ### Introducción
@@ -89,5 +91,3 @@ Se va a proceder a instalar el gestor de bases de datos Microsoft SQL Server 200
 
 ---
 [Volver a la instalación del Helpspot](index.md)
-
-
