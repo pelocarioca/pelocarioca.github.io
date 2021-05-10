@@ -39,3 +39,7 @@ Se va a proceder a instalar el gestor de bases de datos MySQL en un Windows Serv
 ![Instalación de MySQL](img/mysql2.png)
 
 El gestor de bases de datos MySQL ya estará correctamente instalado y configurado.
+
+---
+[Volver a la instalación del Helpspot]InformeHelpSpot.md)
+
