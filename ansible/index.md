@@ -78,6 +78,8 @@ Cuando finalice se, se puede comprobar que se está ejecutando con:
 
 `$ docker ps`
 
+Debería aparecer el contenedor de Ansible en funcionamiento.
+
 ## Configuración de los hosts.
 
 ### Conexión a los hosts.
@@ -94,11 +96,12 @@ Y para copiar la clave en los clientes se puede utilizar:
 
 O añadirla manualmente desde el cliente, el cual tiene la clave en el archivo ~/ansible-host-key.pub:
 
-`$ cat '~/ansible-host-key.pub' >> '~/.ssh/authorized_keys'`
+`$ cat 'Ruta de la clave/ansible-host-key.pub' >> '~/.ssh/authorized_keys'`
 
-O ejecutar este script, requiere de tener instalado en el servidor el paquete sshpass, instalable con `$ sudo apt install -y sshpass`:
+O ejecutar este script, requiere de tener instalado en el servidor el paquete sshpass, en caso de no tenerlo se puede instalar con `$ sudo apt install -y sshpass`.
 
-`#!/bin/bash
+```#!/bin/bash
+#!/bin/bash
 #Nombre del archivo: copiar-claves-servidor.sh
 
 direcciones=("10.1.1.43" "10.1.1.45" "10.1.1.46" "10.1.1.47")
@@ -109,25 +112,44 @@ contrasena=roseforp
 for i in "${direcciones[@]}"
 do
 sshpass -p $contrasena ssh-copy-id -i $ruta -o StrictHostKeyChecking=no ${usuario}@$i
-done`
+done
+```
 
-[Enlace al script](./copiar-claves-servidor.sh)
+[Enlace de descarga del script.](./copiar-claves-servidor.sh)
 
 ### Configuración de un Inventario.
 
 Ahora se va a configurar un inventario de las máquinas clientes, para ello se modifica el archivo **/etc/ansible/hosts** al que se le añade la siguiente configuración:
 
-`[1ASIR]
+```Inventario
+[1ASIR]
 PC1   ansible_host=10.1.1.
 PC2   ansible_host=10.1.1.
 PC3   ansible_host=10.1.1.
 PC4   ansible_host=10.1.1.
 
 [1ASIR:vars]
-ansible_user=
-ansible_password=
-blablabla`
+ansible_user=Profesor
+ansible_password=roseforp
+```
 
-Se guarda el archivo, se reinicia el servicio con `$ systemctl restart ansible`
+![]()
+
+Se guarda el archivo y se reinicia el servicio con el comando:
+
+`$ systemctl restart ansible`
+
+![]()
+
 
 ## Comandos Ad hoc.
+
+Una vez se han inventariado los clientes y se ha copiado la clave pública en ellos, se puede comprobar la conexión a ellos con:
+
+`$ ansible all -m ping`
+
+![]()
+
+[Documentación sobre comandos Ad Hoc.](https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html#managing-packages)
+
+La sintaxis básica de un comando Ad hoc es:
