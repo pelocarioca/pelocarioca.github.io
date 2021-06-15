@@ -12,6 +12,7 @@ Se va a documentar la instalación y uso básico de la herramienta de automatiza
     - Conexión a los hosts.
     - Configuración de un Inventario.
 4. Comandos Ad hoc.
+5. Apartado comandos y Scripts necesarios o útiles.
 
 ---
 ## Instalación de Ansible
@@ -153,3 +154,25 @@ Una vez se han inventariado los clientes y se ha copiado la clave pública en el
 [Documentación sobre comandos Ad Hoc.](https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html#managing-packages)
 
 La sintaxis básica de un comando Ad hoc es:
+
+## Apartado comandos y Scripts necesarios o útiles.
+
+Obtención de IP del propio equipo:
+
+`$ nmcli dev show eno1 | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2`
+
+Obtención de las direcciones física e IPv4 de los equipos de la red:
+
+`$ nmap -sP -n $(nmcli dev show eno1 | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5`
+
+Variable para los hosts con SSH habilitado:
+
+`$ nmap -p 22 --open -n $(nmcli dev show eno1 | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5`
+
+Para obtener la interfaz se puede usar algo parecido a:
+
+`$ ip route get 8.8.8.8 | grep "dev *"`
+
+Obtener los equipos con puerto 22 abierto:
+
+`# nmap -sS -p 22 --open 10.1.1.0/24`
