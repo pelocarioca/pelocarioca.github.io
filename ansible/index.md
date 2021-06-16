@@ -89,7 +89,7 @@ Para conectar el nodo de control a los hosts que se van a administrar se suele u
 
 Para crear el par de claves pública y privada se ejecuta el comando:
 
-`$ ssh-keygen -f 'Ruta de la clave/ansible-host-key' -t ecdsa -b 521`
+`$ ssh-keygen -f 'Ruta de la clave/ansible-host-key' -t rsa -b 4096`
 
 Y para copiar la clave en los clientes se puede utilizar:
 
@@ -99,20 +99,27 @@ O añadirla manualmente desde el cliente, el cual tiene la clave en el archivo ~
 
 `$ cat 'Ruta de la clave/ansible-host-key.pub' >> '~/.ssh/authorized_keys'`
 
-O ejecutar este script, requiere de tener instalado en el servidor el paquete sshpass, en caso de no tenerlo se puede instalar con `$ sudo apt install -y sshpass`.
+O ejecutar este script, requiere de tener instalado en el servidor el paquete sshpass, en caso de no tenerlo se instala automáticamente.
 
 ```#!/bin/bash
 #!/bin/bash
 #Nombre del archivo: copiar-claves-servidor.sh
 
-direcciones=("10.1.1.43" "10.1.1.45" "10.1.1.46" "10.1.1.47")
+#Comprueba si está instalado sshpass
+which sshpass > /dev/null || sudo apt install -y sshpass
+
+#Variables para la ejecución.
+direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
 ruta=~/.ssh/ansible-host-key.pub
 usuario=profesor
+#Esto hay que ocultarlo de alguna forma.
 contrasena=roseforp
 
+#bucle en el que a cada dirección se le copia una clave
 for i in "${direcciones[@]}"
 do
-sshpass -p $contrasena ssh-copy-id -i $ruta -o StrictHostKeyChecking=no ${usuario}@$i
+    #Copia la clave, redirige la salida a un log.
+    sshpass -p $contrasena ssh-copy-id -i $ruta -o StrictHostKeyChecking=no ${usuario}@$i >> copiar-claves.log
 done
 ```
 
@@ -124,14 +131,13 @@ Ahora se va a configurar un inventario de las máquinas clientes, para ello se m
 
 ```Inventario
 [1ASIR]
-PC1   ansible_host=10.1.1.
-PC2   ansible_host=10.1.1.
-PC3   ansible_host=10.1.1.
-PC4   ansible_host=10.1.1.
+PC1   ansible_host=10.1.1.3
+PC2   ansible_host=10.1.1.7
+PC3   ansible_host=10.1.1.12
+PC4   ansible_host=10.1.1.87
 
 [1ASIR:vars]
 ansible_user=Profesor
-ansible_password=roseforp
 ```
 
 ![]()
@@ -192,37 +198,125 @@ Ahora para crear el archivo de inventario:
 ```#!/bin/bash2
 #!/bin/bash
 #Nombre del archivo: crear-inventario.sh
+# check if is running as root
+[ $(whoami) != root ] && echo "[ERROR] Please, run as root" && exit 1
 
-file="hosts"
+file=${1:-"/etc/ansible/hosts"}
+
 read -p "Nombre del aula (ASIR1): " aula
 aula=${aula:-ASIR1}
 
 function elec {
-read -p "Sobreescribir el archivo? (y/N/c): " sobre
-sobre=${sobre:-N}
+    read -p "Sobreescribir el archivo? (y/N/c): " sobre
+    sobre=${sobre:-N}
 
-case $sobre in
-	Y*|y*)
-		aula2=$(echo "[$aula]" > $file)
-		resul;;
-	N*|n*)
-	     	aula2=$(echo "[$aula]" >> $file)
-		resul;;
-	C*|c*)
-		exit;;
-	*)
-		echo "Vuelve a intentarlo"
-		elec;;
-esac
+    case $sobre in
+      Y*|y*)
+        echo "[$aula]" > $file
+        resul;;
+      N*|n*)
+             echo "[$aula]" >> $file
+        resul;;
+      C*|c*)
+        exit;;
+      *)
+        echo "Vuelve a intentarlo"
+        elec;;
+    esac
 }
 
 function resul {
-echo "Buscando IPs con el puerto 22 abierto"
-$aula2
-dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
-nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5 >> $file
-exit 0
+    echo "Buscando IPs con el puerto 22 abierto"
+    dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
+    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nm$
+
+    echo "" >> $file
+    echo "Generando variables"
+    echo "[$aula:vars]" >> $file
+    echo "ansible_user=$usuario" >> $file
+
+    echo "Fichero generado $file:"
+    cat $file
+    exit 0
 }
 elec
 ```
 [Enlace de descarga del script.](./crear-inventario.sh)
+
+El script final que lo hace todo todito todo:
+```
+#!/bin/bash
+#Nombre del archivo: superscript.sh
+
+# check if is running as root
+[ $(whoami) != root ] && echo "[ERROR] Please, run as root" && exit 1
+
+#variables
+read -p "Nombre del aula (ASIR1): " aula
+aula=${aula:-ASIR1}
+
+read -p "Usuario (profesor): " usuario
+usuario=${usuario:-profesor}
+
+read -sp "Contraseña (********): " contra
+contra=${contra:-roseforp}
+
+read -p "Ruta/Nombre de la clave (~/.ssh/ansible-host-key): " rutakey
+rutakey=${rutakey:-~/.ssh/ansible-host-key}
+rutapub="$rutakey.pub"
+
+read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
+file=${1:-"/etc/ansible/hosts"}
+
+#Crea el par de claves
+ssh-keygen -f "$rutakey" -t rsa -b 4096
+
+#Comprueba si está instalado sshpass
+which sshpass > /dev/null || sudo apt install -y sshpass
+
+#Automatizar esto.
+direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+
+#bucle en el que a cada dirección se le copia una clave
+for i in "${direcciones[@]}"
+do
+    #Copia la clave, redirige la salida a un log.
+    sshpass -p $contra ssh-copy-id -i $rutapub -o StrictHostKeyChecking=no ${usuario}@$i >> copiar-claves.log
+done
+contra = "o"
+
+function elec {
+    read -p "Sobreescribir el archivo? (y/N/c): " sobre
+    sobre=${sobre:-N}
+
+    case $sobre in
+      Y*|y*)
+        echo "[$aula]" > $file
+        resul;;
+      N*|n*)
+             echo "[$aula]" >> $file
+        resul;;
+      C*|c*)
+        exit;;
+      *)
+        echo "Vuelve a intentarlo"
+        elec;;
+    esac
+}
+
+function resul {
+    echo "Buscando IPs con el puerto 22 abierto"
+    dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
+    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nm$
+
+    echo "" >> $file
+    echo "Generando variables"
+    echo "[$aula:vars]" >> $file
+    echo "ansible_user=$usuario" >> $file
+
+    echo "Fichero generado $file:"
+    cat $file
+    exit 0
+}
+elec
+```

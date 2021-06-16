@@ -1,12 +1,43 @@
 #!/bin/bash
-#Nombre del archivo: crear-inventario.sh
+#Nombre del archivo: superscript.sh
+
 # check if is running as root
 [ $(whoami) != root ] && echo "[ERROR] Please, run as root" && exit 1
 
-file=${1:-"/etc/ansible/hosts"}
-
+#variables
 read -p "Nombre del aula (ASIR1): " aula
 aula=${aula:-ASIR1}
+
+read -p "Usuario (profesor): " usuario
+usuario=${usuario:-profesor}
+
+read -sp "Contraseña (********): " contra
+contra=${contra:-roseforp}
+
+read -p "Ruta/Nombre de la clave (~/.ssh/ansible-host-key): " rutakey
+rutakey=${rutakey:-~/.ssh/ansible-host-key}
+rutapub="$rutakey.pub"
+echo "Clave pública generada: $rutapub"
+
+read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
+file=${1:-"/etc/ansible/hosts"}
+
+#Crea el par de claves
+ssh-keygen -f "$rutakey" -t rsa -b 4096
+
+#Comprueba si está instalado sshpass
+which sshpass > /dev/null || sudo apt install -y sshpass
+
+#Automatizar esto.
+direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+
+#bucle en el que a cada dirección se le copia una clave
+for i in "${direcciones[@]}"
+do
+    #Copia la clave, redirige la salida a un log.
+    sshpass -p $contra ssh-copy-id -i $rutapub -o StrictHostKeyChecking=no ${usuario}@$i >> copiar-claves.log
+done
+contra = "o"
 
 function elec {
     read -p "Sobreescribir el archivo? (y/N/c): " sobre
