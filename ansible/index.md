@@ -12,7 +12,8 @@ Se va a documentar la instalación y uso básico de la herramienta de automatiza
     - Conexión a los hosts.
     - Configuración de un Inventario.
 4. Comandos Ad hoc.
-5. Apartado comandos y Scripts necesarios o útiles.
+5. Comandos y scripts útiles en la automatización.
+6. Script de configuración automática.
 
 ---
 ## Instalación de Ansible
@@ -144,12 +145,7 @@ ansible_user=Profesor
 
 ![]()
 
-Se guarda el archivo y se reinicia el servicio con el comando:
-
-`$ systemctl restart ansible`
-
-![]()
-
+Más adelante hay un script que te crea el inventario con los equipos que tengan el puerto 22 abierto.
 
 ## Comandos Ad hoc.
 
@@ -159,6 +155,10 @@ Una vez se han inventariado los clientes y se ha copiado la clave pública en el
 
 ![]()
 
+En caso de que el comando no funcione por no poder autentificar al usuario, se debe acceder al archivo `/etc/ansible/ansible.cfg` y el valor de la siguiente fila:
+
+`private_key_file = /home/profesor/.ssh/ansible-host-key`
+
 [Documentación sobre comandos Ad Hoc.](https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html#managing-packages)
 
 La sintaxis básica de un comando Ad hoc es:
@@ -167,14 +167,49 @@ La sintaxis básica de un comando Ad hoc es:
 
 Aquí se exponen algunos ejemplos de comandos:
 
-Para instalar un paquete con apt:
+1. Para instalar un paquete con apt:
 
-`ansible all -m apt -a "name=paquete" --become -K`
+`$ ansible all -m apt -a "name=paquete" --become -K`
+
 _(Pide autentificación por contraseña)._
 
+2. Para borrar un paquete con apt
+
+`$ ansible all -m apt -a "name=paquete state=absent" --become -K`
+
+_(Pide autentificación por contraseña)._
+
+3. Para ejecutar un script desde de un repositorio:
+
+`$ ansible ASIR1 -m shell -a "wget -qO- https://raw.githubusercontent.com/pelocarioca/pelocarioca.github.io/main/ansible/ss.sh | bash"`
+
+4. Para iniciar un servicio:
+
+`$ ansible ASIR1 -m service -a "name=httpd state=started" --become -K`
+
+_(Pide autentificación por contraseña)._
+
+5. Para reiniciarlo:
+
+`$ ansible ASIR1 -m service -a "name=httpd state=restarted" --become -K`
+
+_(Pide autentificación por contraseña)._
+
+6. O pararlo:
+
+`$ ansible ASIR1 -m service -a "name=httpd state=stopped" --become -K`
+
+_(Pide autentificación por contraseña)._
+
+Para las distintas funciones se deben usar módulos, algunos de ellos son:
+- _file_ para modificar archivos.
+- _user_ para trabajar con usuarios.
+- _service_ para iniciar y detener servicios.
+- _copy_ para copiar archivos y ficheros.
+- _group_ para trabajar con los grupos.
 
 
-## Apartado comandos y Scripts necesarios o útiles.
+## Comandos y scripts útiles en la automatización.
 
 Obtención de IP del propio equipo:
 
@@ -196,18 +231,16 @@ Obtener los equipos con puerto 22 abierto:
 
 `# nmap -sS -p 22 --open 10.1.1.0/24`
 
-Ultrascript para obtener automáticamente los equipos con el puerto 22 abierto:
+Comando para obtener automáticamente los equipos con el puerto 22 abierto:
 
-```#!/bin/bash2
-#!/bin/bash
-#Nombre del archivo: crear-lista-p22.sh
+`nmap -p 22 --open -n $(nmcli dev show $(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5) | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5`
 
-dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
+Ahora un script para crear el archivo de inventario:
 
-nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5
-```
+[Enlace de descarga del script.](./crear-inventario.sh)
 
-Ahora para crear el archivo de inventario:
+Contenido:
+
 ```#!/bin/bash2
 #!/bin/bash
 #Nombre del archivo: crear-inventario.sh
@@ -254,9 +287,14 @@ function resul {
 }
 elec
 ```
-[Enlace de descarga del script.](./crear-inventario.sh)
 
-El script final que lo hace todo todito todo:
+## Script de configuración automática.
+
+El script final que lo hace todo:
+
+[Enlace de descarga del script.](./superscript.sh)
+
+Contenido:
 ```
 #!/bin/bash
 #Nombre del archivo: superscript.sh
@@ -316,7 +354,6 @@ direcciones=(
 $(nmap -p 22 --open -n $(nmcli dev show $(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5) | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5)
 )
 
-
 #bucle en el que a cada dirección se le copia una clave
 for i in "${direcciones[@]}"
 do
@@ -347,4 +384,3 @@ contra="o"
 }
 elec
 ```
-[Enlace de descarga del script.](./superscript.sh)
