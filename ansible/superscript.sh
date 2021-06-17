@@ -22,6 +22,25 @@ echo "Clave pública generada: $rutapub"
 read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
 file=${1:-"/etc/ansible/hosts"}
 
+function elec {
+    read -p "Sobreescribir el archivo? (y/N/c): " sobre
+    sobre=${sobre:-N}
+
+    case $sobre in
+      Y*|y*)
+        echo "[$aula]" > $file
+        resul;;
+      N*|n*)
+             echo "[$aula]" >> $file
+        resul;;
+      C*|c*)
+        exit;;
+      *)
+        echo "Vuelve a intentarlo"
+        elec;;
+    esac
+}
+function resul {
 #Crea el par de claves
 /bin/su --command "ssh-keygen -f ""$rutakey"" -t rsa -b 4096" $usuario
 
@@ -44,29 +63,15 @@ do
 done
 contra="o"
 
-function elec {
-    read -p "Sobreescribir el archivo? (y/N/c): " sobre
-    sobre=${sobre:-N}
 
-    case $sobre in
-      Y*|y*)
-        echo "[$aula]" > $file
-        resul;;
-      N*|n*)
-             echo "[$aula]" >> $file
-        resul;;
-      C*|c*)
-        exit;;
-      *)
-        echo "Vuelve a intentarlo"
-        elec;;
-    esac
-}
-
-function resul {
     echo "Buscando IPs con el puerto 22 abierto"
-    dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
-    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5 >> $file
+    #dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
+    #nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5 >> $file
+    for i in "${direcciones[@]}"
+    do
+      echo $i  >> $file
+    done
+
 
     echo "" >> $file
     echo "Generando variables"
@@ -75,8 +80,7 @@ function resul {
 
     echo "Fichero generado $file:"
     cat $file
-    echo "VERIFICACIÓN PING:"
-    /bin/su --command "ansible all -m ping" $usuario
+    echo "Verifica el ping introducido con: ansible $aula -m ping"
     exit 0
 }
 elec
