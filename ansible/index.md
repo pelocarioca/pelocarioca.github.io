@@ -109,7 +109,9 @@ O ejecutar este script, requiere de tener instalado en el servidor el paquete ss
 which sshpass > /dev/null || sudo apt install -y sshpass
 
 #Variables para la ejecución.
-direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+direcciones=(
+$(nmap -p 22 --open -n $(nmcli dev show $(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5) | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5)
+)
 ruta=~/.ssh/ansible-host-key.pub
 usuario=profesor
 #Esto hay que ocultarlo de alguna forma.
@@ -129,7 +131,7 @@ done
 
 Ahora se va a configurar un inventario de las máquinas clientes, para ello se modifica el archivo **/etc/ansible/hosts** al que se le añade la siguiente configuración:
 
-```Inventario
+```
 [1ASIR]
 PC1   ansible_host=10.1.1.3
 PC2   ansible_host=10.1.1.7
@@ -160,6 +162,17 @@ Una vez se han inventariado los clientes y se ha copiado la clave pública en el
 [Documentación sobre comandos Ad Hoc.](https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html#managing-packages)
 
 La sintaxis básica de un comando Ad hoc es:
+
+`$ ansible {grupo | all} [-m nombre-modulo] -a comando`
+
+Aquí se exponen algunos ejemplos de comandos:
+
+Para instalar un paquete con apt:
+
+`ansible all -m apt -a "name=paquete" --become -K`
+_(Pide autentificación por contraseña)._
+
+
 
 ## Apartado comandos y Scripts necesarios o útiles.
 
@@ -228,7 +241,7 @@ function elec {
 function resul {
     echo "Buscando IPs con el puerto 22 abierto"
     dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
-    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nm$
+    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5 >> $file
 
     echo "" >> $file
     echo "Generando variables"
@@ -259,31 +272,17 @@ read -p "Usuario (profesor): " usuario
 usuario=${usuario:-profesor}
 
 read -sp "Contraseña (********): " contra
+echo ""
 contra=${contra:-roseforp}
 
 read -p "Ruta/Nombre de la clave (~/.ssh/ansible-host-key): " rutakey
 rutakey=${rutakey:-~/.ssh/ansible-host-key}
+echo "La clave privada se llamará: $rutakey"
 rutapub="$rutakey.pub"
+echo "La clave pública se llamará: $rutapub"
 
 read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
 file=${1:-"/etc/ansible/hosts"}
-
-#Crea el par de claves
-ssh-keygen -f "$rutakey" -t rsa -b 4096
-
-#Comprueba si está instalado sshpass
-which sshpass > /dev/null || sudo apt install -y sshpass
-
-#Automatizar esto.
-direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
-
-#bucle en el que a cada dirección se le copia una clave
-for i in "${direcciones[@]}"
-do
-    #Copia la clave, redirige la salida a un log.
-    sshpass -p $contra ssh-copy-id -i $rutapub -o StrictHostKeyChecking=no ${usuario}@$i >> copiar-claves.log
-done
-contra = "o"
 
 function elec {
     read -p "Sobreescribir el archivo? (y/N/c): " sobre
@@ -303,11 +302,38 @@ function elec {
         elec;;
     esac
 }
-
 function resul {
+#Crea el par de claves
+/bin/su --command "ssh-keygen -f ""$rutakey"" -t rsa -b 4096" $usuario
+
+#Comprueba si está instalado sshpass
+which sshpass > /dev/null || apt install -y sshpass
+
+
+#direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+#Recoge las direcciones y las almacena en un array llamado direcciones
+direcciones=(
+$(nmap -p 22 --open -n $(nmcli dev show $(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5) | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5)
+)
+
+
+#bucle en el que a cada dirección se le copia una clave
+for i in "${direcciones[@]}"
+do
+    #Copia la clave, redirige la salida a un log.
+    sshpass -p $contra ssh-copy-id -i $rutapub -o StrictHostKeyChecking=no ${usuario}@$i >> copiar-claves.log
+done
+contra="o"
+
+
     echo "Buscando IPs con el puerto 22 abierto"
-    dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
-    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nm$
+    #dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
+    #nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5 >> $file
+    for i in "${direcciones[@]}"
+    do
+      echo $i  >> $file
+    done
+
 
     echo "" >> $file
     echo "Generando variables"
@@ -316,7 +342,9 @@ function resul {
 
     echo "Fichero generado $file:"
     cat $file
+    echo "Verifica el ping introducido con: ansible $aula -m ping"
     exit 0
 }
 elec
 ```
+[Enlace de descarga del script.](./superscript.sh)
