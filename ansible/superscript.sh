@@ -23,8 +23,8 @@ read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
 file=${1:-"/etc/ansible/hosts"}
 
 #Crea el par de claves
-/bin/su -c ssh-keygen -f "$rutakey" -t ecdsa -b 521 - $usuario
-sudo su
+/bin/su --command "ssh-keygen -f ""$rutakey"" -t rsa -b 4096" $usuario
+
 #Comprueba si está instalado sshpass
 which sshpass > /dev/null || apt install -y sshpass
 
@@ -42,7 +42,8 @@ do
     #Copia la clave, redirige la salida a un log.
     sshpass -p $contra ssh-copy-id -i $rutapub -o StrictHostKeyChecking=no ${usuario}@$i >> copiar-claves.log
 done
-contra=0
+contra="o"
+
 function elec {
     read -p "Sobreescribir el archivo? (y/N/c): " sobre
     sobre=${sobre:-N}
@@ -64,10 +65,8 @@ function elec {
 
 function resul {
     echo "Buscando IPs con el puerto 22 abierto"
-    for i in $direcciones
-    do
-      $i >> $file
-    done
+    dev=$(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5)
+    nmap -p 22 --open -n $(nmcli dev show $dev | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5 >> $file
 
     echo "" >> $file
     echo "Generando variables"
@@ -76,6 +75,8 @@ function resul {
 
     echo "Fichero generado $file:"
     cat $file
+    echo "VERIFICACIÓN PING:"
+    /bin/su --command "ansible all -m ping" $usuario
     exit 0
 }
 elec
