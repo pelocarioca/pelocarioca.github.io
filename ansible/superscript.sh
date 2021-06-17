@@ -12,6 +12,7 @@ read -p "Usuario (profesor): " usuario
 usuario=${usuario:-profesor}
 
 read -sp "Contraseña (********): " contra
+echo ""
 contra=${contra:-roseforp}
 
 read -p "Ruta/Nombre de la clave (~/.ssh/ansible-host-key): " rutakey
