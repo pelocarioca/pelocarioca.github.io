@@ -28,8 +28,13 @@ ssh-keygen -f "$rutakey" -t rsa -b 4096
 #Comprueba si está instalado sshpass
 which sshpass > /dev/null || sudo apt install -y sshpass
 
-#Automatizar esto.
-direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+
+#direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+#Recoge las direcciones y las almacena en un array llamado direcciones
+direcciones=(
+$(nmap -p 22 --open -n $(nmcli dev show $(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5) | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5)
+)
+
 
 #bucle en el que a cada dirección se le copia una clave
 for i in "${direcciones[@]}"
