@@ -17,8 +17,9 @@ contra=${contra:-roseforp}
 
 read -p "Ruta/Nombre de la clave (~/.ssh/ansible-host-key): " rutakey
 rutakey=${rutakey:-~/.ssh/ansible-host-key}
+echo "La clave privada se llamará: $rutakey"
 rutapub="$rutakey.pub"
-echo "Clave pública generada: $rutapub"
+echo "La clave pública se llamará: $rutapub"
 
 read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
 file=${1:-"/etc/ansible/hosts"}
