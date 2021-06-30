@@ -1,5 +1,9 @@
 #!/bin/bash
 #Nombre del archivo: copiar-claves-servidor.sh
+
+#Este código se encuentra licenciado bajo GNU GENERAL PUBLIC LICENSE v3
+#Para más información consultar el archivo LICENSE
+
 #Este script copia una clave pública en las máquinas cliente, que son las
 #máquinas que se encuentran en la red del master con el puerto 22 abierto.
 

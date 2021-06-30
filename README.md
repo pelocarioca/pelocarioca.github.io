@@ -1,6 +1,21 @@
 # pelocarioca.github.io
+Por Cassio de 1º de ASIR del IES Domingo Pérez Minik.
+
+## Sobre el repositorio
+
+Se trata de una guía de instalación y ejemplos de comandos ad hoc para Ansible, además incluye una serie de scripts de conveniencia que ayudan en la configuración de los inventarios de forma muy sencilla para el caso en el que se creó el repositorio. También contiene imágenes de las salidas de algunos de los comandos.
+
+## Agradecimiento
+
+La creación de la guía y sus contenidos no habría sido posible sin la ayuda de mi profesor de sistemas operativos Francisco Vargas Ruíz.
 
 ## TODO
+(CONTRASEÑAS) Cambiar la contraseña del archivo de hosts de forma que se encuentre en un _vault_ de Ansible, para evitar que se pueda leer como texto plano.
+
+(COPIAR-CLAVES) Crear un último script para copiar la clave pública desde un servidor externo, se puede intentar hacer montando una carpeta de la máquina que contenga la clave o mediante el comando curl a un servidor web que contenga la clave pública y añadiéndola al archivo ~/.ssh/authorized_keys en caso de que exista.
+
+(IMÁGENES) Añadir las imágenes que faltan a la guía, no es del todo necesario pero por tener una guía más completa.
+
 (SOLUCIONADO) Arreglar el problema de que la clave ssh generada no sirve para conectarse.
     - Puede ser un problema de generar las claves con sudo.
     - Debido a que se crean con sudo, profesor no cuenta con los permisos para utilizar la clave privada, se puede probar en a añadir una línea tipo `chown $usuario $rutakey` y
@@ -18,6 +33,6 @@ direcciones=(
   $(comando para recoger IP)
   )
 ```
+## licencia
 
-(IMPORTANTE) Cambiar la contraseña del archivo de hosts de forma que se encuentre
-en un Vault de Ansible, para evitar que se pueda leer como texto plano.
+El repositorio y sus contenidos están licenciados bajo los términos de la GNU GENERAL PUBLIC LICENSE v3, teniendo más detalles acerca de la licencia en el archivo /LICENSE.

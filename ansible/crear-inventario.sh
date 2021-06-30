@@ -1,5 +1,9 @@
 #!/bin/bash
 #Nombre del archivo: crear-inventario.sh
+
+#Este código se encuentra licenciado bajo GNU GENERAL PUBLIC LICENSE v3
+#Para más información consultar el archivo LICENSE
+
 #Este script crea un archivo de hosts legible por Ansible, para ello detecta
 #las máquinas con el puerto 22 abierto de la red del master y las guarda.
 #También añade como variable de las máquinas un usuario.

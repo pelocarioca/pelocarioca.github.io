@@ -1,5 +1,9 @@
 #!/bin/bash
 #Nombre del archivo: superscript.sh
+
+#Este código se encuentra licenciado bajo GNU GENERAL PUBLIC LICENSE v3
+#Para más información consultar el archivo LICENSE
+
 #Este script lee una serie de variables; grupo, usuario, contraseña, path a las
 #claves y archivo de salida y hace lo siguiente:
 #~Crea un par de claves ssh rsa de 4096 bits (se puede intentar cambiar pero
