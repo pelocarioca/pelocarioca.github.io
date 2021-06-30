@@ -1,7 +1,9 @@
 #!/bin/bash
 #Nombre del archivo: copiar-claves-servidor.sh
+#Este script copia una clave pública en las máquinas cliente, que son las
+#máquinas que se encuentran en la red del master con el puerto 22 abierto.
 
-#Comprueba si está instalado sshpass
+#Comprueba si está instalado sshpass, en caso de que no lo intenta instalar.
 which sshpass > /dev/null || sudo apt install -y sshpass
 
 #Variables para la ejecución.

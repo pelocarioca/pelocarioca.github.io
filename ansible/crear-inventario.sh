@@ -1,5 +1,9 @@
 #!/bin/bash
 #Nombre del archivo: crear-inventario.sh
+#Este script crea un archivo de hosts legible por Ansible, para ello detecta
+#las máquinas con el puerto 22 abierto de la red del master y las guarda.
+#También añade como variable de las máquinas un usuario.
+
 # check if is running as root
 [ $(whoami) != root ] && echo "[ERROR] Please, run as root" && exit 1
 

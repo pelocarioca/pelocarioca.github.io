@@ -18,3 +18,6 @@ direcciones=(
   $(comando para recoger IP)
   )
 ```
+
+(IMPORTANTE) Cambiar la contraseña del archivo de hosts de forma que se encuentre
+en un Vault de Ansible, para evitar que se pueda leer como texto plano.

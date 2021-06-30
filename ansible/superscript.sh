@@ -1,10 +1,25 @@
 #!/bin/bash
 #Nombre del archivo: superscript.sh
+#Este script lee una serie de variables; grupo, usuario, contraseña, path a las
+#claves y archivo de salida y hace lo siguiente:
+#~Crea un par de claves ssh rsa de 4096 bits (se puede intentar cambiar pero
+#   puede que no funcione).
+#~Copia las claves creadas en las máquinas clientes, que son las máquinas de la
+#   red local con el puerto 22 abierto. Para ello utiliza la información recogida
+#   en las variables:
+#   ¡IMPORTANTE! el usuario y contraseña introducidos son tanto los de las
+#   máquinas cliente como la de control, es decir que el usurio "ejemplo" debe
+#   estar en la máquina master y en las slaves con permisos de administrador
+#   (para poder utilizar correctamente los comandos de Ansible.
+#~Crea o reescribe un archivo de hosts de Ansible con las direcciones de las
+#   máquinas clientes, añade como variables de estas máquinas el usuario y
+#   contraseña introducidos.
 
-# check if is running as root
+
+# comprueba si el usuario que lo ejecuta es ROOT.
 [ $(whoami) != root ] && echo "[ERROR] Please, run as root" && exit 1
 
-#variables
+#Lectura de variables
 read -p "Nombre del aula (ASIR1): " aula
 aula=${aula:-ASIR1}
 
@@ -24,6 +39,7 @@ echo "La clave pública se llamará: $rutapub"
 read -p "Ruta del archivo de salida (/etc/ansible/hosts): " file
 file=${1:-"/etc/ansible/hosts"}
 
+#Función con elección de variables a la que volver (pues es multielección).
 function elec {
     read -p "Sobreescribir el archivo? (y/N/c): " sobre
     sobre=${sobre:-N}
@@ -42,22 +58,23 @@ function elec {
         elec;;
     esac
 }
+
+#Función a la que se llega tras la multielección.
 function resul {
-#Crea el par de claves
+#Crea el par de claves.
 /bin/su --command "ssh-keygen -f ""$rutakey"" -t rsa -b 4096" $usuario
 
-#Comprueba si está instalado sshpass
+#Comprueba si está instalado sshpass.
 which sshpass > /dev/null || apt install -y sshpass
 
-
-#direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
-#Recoge las direcciones y las almacena en un array llamado direcciones
+#Ejemplo de direcciones:
+#Direcciones=("10.1.1.7" "10.1.1.12" "10.1.1.87")
+#Recoge las direcciones y las almacena en un array llamado direcciones.
 direcciones=(
 $(nmap -p 22 --open -n $(nmcli dev show $(ip route get 8.8.8.8 | grep "dev *" | cut -d" " -f 5) | grep "^IP4\.ADDRESS.*:" | tr -s " " | cut -d" " -f2) | grep "^Nmap scan" | cut -d" " -f5)
 )
 
-
-#bucle en el que a cada dirección se le copia una clave
+#Bucle en el que a cada dirección del array se le copia una clave.
 for i in "${direcciones[@]}"
 do
     #Copia la clave, redirige la salida a un log.
